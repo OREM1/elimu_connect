@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elimu-Connect | CBC Resource Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary: #1e40af; 
+            --primary-light: #dbeafe;
+            --accent: #10b981; 
+            --bg: #f1f5f9; 
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        header { 
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); 
+            color: white; 
+            padding: 3rem 1rem; 
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 { margin: 0; font-size: 2.5rem; font-weight: 700; letter-spacing: -0.025em; }
+        header p { margin: 0.5rem 0 0; opacity: 0.9; font-weight: 300; }
+
+        .container { max-width: 1200px; margin: auto; padding: 2rem 1rem; }
+        
+        .filter-section { 
+            background: var(--card-bg); 
+            padding: 1.5rem; 
+            border-radius: 1rem; 
+            display: flex; 
+            gap: 1rem; 
+            flex-wrap: wrap; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 3rem; 
+            position: sticky; 
+            top: 1rem; 
+            z-index: 100;
+            border: 1px solid #e2e8f0;
+        }
+
+        input, select { 
+            padding: 0.75rem 1rem; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 0.5rem; 
+            font-size: 0.95rem; 
+            flex: 1; 
+            min-width: 200px;
+        }
+
+        .grade-section { margin-bottom: 5rem; }
+        .grade-header { 
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .grade-header h2 { 
+            margin: 0;
+            font-size: 1.875rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .grade-line { flex-grow: 1; height: 2px; background: #e2e8f0; border-radius: 1px; }
+
+        .subject-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+            gap: 2rem; 
+        }
+        
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 1rem; 
+            padding: 1.5rem; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        
+        .subject-title { 
+            color: var(--text-main); 
+            font-size: 1.25rem; 
+            margin: 0 0 1.25rem 0; 
+            font-weight: 600;
+            border-left: 4px solid var(--primary);
+            padding-left: 0.75rem;
+        }
+
+        .material-item {
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 0.875rem; 
+            background: #f8fafc; 
+            border: 1px solid #f1f5f9;
+            border-radius: 0.75rem; 
+            margin-bottom: 0.75rem; 
+        }
+
+        .item-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+        
+        .item-type { 
+            font-size: 0.65rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            padding: 0.2rem 0.5rem; 
+            border-radius: 0.375rem; 
+            width: fit-content; 
+            margin-bottom: 0.375rem;
+        }
+        
+        .t-pdf { background: #fee2e2; color: #991b1b; }
+        .t-video { background: #dbeafe; color: #1e40af; }
+        .t-audio { background: #f3e8ff; color: #6b21a8; }
+        .t-quiz { background: #fef3c7; color: #92400e; }
+        .t-project { background: #d1fae5; color: #059669; }
+
+        .file-name { 
+            font-size: 0.875rem; 
+            font-weight: 500; 
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-actions { display: flex; gap: 0.5rem; }
+        .item-actions a { 
+            text-decoration: none; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            color: var(--primary);
+            padding: 0.4rem 0.75rem;
+            border-radius: 0.375rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .empty-status { 
+            color: var(--text-muted); 
+            font-size: 0.875rem; 
+            text-align: center; 
+            padding: 2rem 0;
+            border: 2px dashed #e2e8f0;
+            border-radius: 0.75rem;
+        }
+
+        /* Contact Section Styles */
+.contact-section {
+    background: var(--card-bg);
+    padding: 3rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin-top: 4rem;
+    border: 1px solid #e2e8f0;
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.contact-header h2 {
+    color: var(--primary);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.contact-header p {
+    color: var(--text-muted);
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+@media (max-width: 768px) {
+    .contact-grid { grid-template-columns: 1fr; }
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+}
+
+textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.submit-contact {
+    background: var(--primary);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.submit-contact:hover {
+    background: #1e3a8a;
+}
+
+.contact-info-card {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 1rem;
+    height: 100%;
+}
+
+.info-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-icon {
+    color: var(--primary);
+    font-weight: bold;
+}
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Elimu-Connect</h1>
+    <p>Official CBC Resource Repository (Grades 1-9)</p>
+</header>
+
+<div class="container">
+    <div class="filter-section">
+        <input type="text" id="searchBox" placeholder="Search subject name...">
+        <select id="gradeSel">
+            <option value="all">View All Grades</option>
+            <% for(let i=1; i<=9; i++) { %> 
+                <option value="<%= i %>">Grade <%= i %></option> 
+            <% } %>
+        </select>
+    </div>
+
+    <div id="mainDisplay">
+        <% 
+        const cbcCurriculum = {
+            lower: ["English Activities", "Kiswahili Activities", "Mathematical Activities", "Environmental Activities", "Religious Education", "Creative Activities"],
+            upper: ["English", "Kiswahili", "Mathematics", "Science and Technology", "Agriculture and Nutrition", "Social Studies", "Creative Arts"],
+            junior: ["English", "Kiswahili", "Mathematics", "Integrated Science", "Pre-Technical Studies", "Social Studies", "Agriculture and Nutrition", "Creative Arts and Sports", "Computer Science"]
+        };
+
+        for(let g = 1; g <= 9; g++) { 
+            let levelKey = g <= 3 ? "lower" : (g <= 6 ? "upper" : "junior");
+            const uploadedMaterials = materials.filter(m => m.grade == g);
+        %>
+            <div class="grade-section" data-grade="<%= g %>">
+                <div class="grade-header">
+                    <h2>Grade <%= g %></h2>
+                    <div class="grade-line"></div>
+                </div>
+                
+                <div class="subject-grid">
+                    <% cbcCurriculum[levelKey].forEach(subject => { 
+                        const subjectFiles = uploadedMaterials.filter(m => m.subject_name.toLowerCase() === subject.toLowerCase());
+                    %>
+                        <div class="card">
+                            <h3 class="subject-title"><%= subject %></h3>
+                            
+                            <div class="material-list">
+                                <% if (subjectFiles.length > 0) { %>
+                                    <% subjectFiles.forEach(file => { 
+                                        const cleanFileName = file.file_path.includes('-') 
+                                                              ? file.file_path.split('-').slice(1).join('-') 
+                                                              : file.file_path;
+                                    %>
+                                        <div class="material-item">
+                                            <div class="item-info">
+                                                <span class="item-type t-<%= file.material_type.toLowerCase() %>">
+                                                    <%= file.material_type %>
+                                                </span>
+                                                <span class="file-name"><%= cleanFileName %></span>
+                                            </div>
+                                            <div class="item-actions">
+                                                <a href="/uploads/<%= file.file_path %>" target="_blank">View</a>
+                                                <a href="/uploads/<%= file.file_path %>" download>Download</a>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="empty-status">No resources available</div>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="contact-section" id="collaborate">
+    <div class="contact-header">
+        <h2>Partner with Elimu-Connect</h2>
+        <p>Are you a teacher or an educator with high-quality CBC resources? Let's collaborate.</p>
+    </div>
+
+    <div class="contact-grid">
+        <form action="/contact-submit" method="POST">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Work Email Address</label>
+                <input type="email" id="email" name="email" placeholder="email@school.com" required>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="0712..." required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Your Role</label>
+                    <select id="role" name="role" required>
+                        <option value="teacher">Teacher</option>
+                        <option value="curriculum_dev">Curriculum Developer</option>
+                        <option value="individual">Individual Contributor</option>
+                        <option value="school">School Representative</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="subjects">Subjects/Grades of Interest</label>
+                <input type="text" id="subjects" name="subjects" placeholder="e.g. Junior School Science, Grade 4 Mathematics">
+            </div>
+
+            <div class="form-group">
+                <label for="message">Collaboration Proposal</label>
+                <textarea id="message" name="message" rows="4" placeholder="Tell us about the resources you would like to share..." required></textarea>
+            </div>
+
+            <button type="submit" class="submit-contact">Send Collaboration Request</button>
+        </form>
+
+        <div class="contact-info-card">
+            <h3 style="color: var(--primary); margin-top: 0;">Why Collaborate?</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Join our network of educators dedicated to making quality CBC materials accessible to every student in Kenya.</p>
+            
+            <div class="info-item">
+                <div class="info-icon">✓</div>
+                <div>
+                    <strong style="display:block; font-size: 0.95rem;">Wider Reach</strong>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">Share your expertise with thousands of learners nationwide.</span>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">✓</div>
+                <div>
+                    <strong style="display:block; font-size: 0.95rem;">Professional Recognition</strong>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">Be recognized as an official Elimu-Connect content partner.</span>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">✓</div>
+                <div>
+                    <strong style="display:block; font-size: 0.95rem;">Resource Verification</strong>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">Your materials undergo KICD-aligned review before publishing.</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                <p style="font-size: 0.85rem; font-weight: 600;">Direct Inquiries:</p>
+                <p style="font-size: 0.85rem; color: var(--primary);">partnerships@elimu-connect.co.ke</p>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    const searchBox = document.getElementById('searchBox');
+    const gradeSel = document.getElementById('gradeSel');
+
+    function filter() {
+        const query = searchBox.value.toLowerCase();
+        const grade = gradeSel.value;
+        document.querySelectorAll('.grade-section').forEach(sec => {
+            let hasVisible = false;
+            sec.querySelectorAll('.card').forEach(card => {
+                const title = card.querySelector('.subject-title').innerText.toLowerCase();
+                const match = title.includes(query) && (grade === 'all' || sec.dataset.grade === grade);
+                card.style.display = match ? 'flex' : 'none';
+                if(match) hasVisible = true;
+            });
+            sec.style.display = hasVisible ? 'block' : 'none';
+        });
+    }
+    searchBox.addEventListener('input', filter);
+    gradeSel.addEventListener('change', filter);
+</script>
+</body>
+</html>

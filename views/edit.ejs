@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Resource | Elimu-Connect</title>
+    <style>
+        :root { --primary: #1a508b; --bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 40px; }
+        .edit-container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #475569; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-save { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .current-file { font-size: 0.85rem; color: #64748b; background: #f1f5f9; padding: 10px; border-radius: 5px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="edit-container">
+    <h2>Edit Resource Details</h2>
+    <form action="/update-material/<%= material.id %>" method="POST" enctype="multipart/form-data">
+        
+        <div class="form-group">
+            <label>Grade Level</label>
+            <select name="grade" id="editGrade" required>
+                <% for(let i=1; i<=9; i++) { %>
+                    <option value="<%= i %>" <%= material.grade == i ? 'selected' : '' %>>Grade <%= i %></option>
+                <% } %>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Subject (Learning Area)</label>
+            <select name="subject" id="editSubject" required>
+                </select>
+        </div>
+
+        <div class="form-group">
+            <label>Resource Type</label>
+            <select name="type">
+                <option value="PDF" <%= material.material_type === 'PDF' ? 'selected' : '' %>>PDF Notes</option>
+                <option value="Video" <%= material.material_type === 'Video' ? 'selected' : '' %>>Video Lesson</option>
+                <option value="Audio" <%= material.material_type === 'Audio' ? 'selected' : '' %>>Audio Narration</option>
+                <option value="Quiz" <%= material.material_type === 'Quiz' ? 'selected' : '' %>>Interactive Quiz</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Change File (Optional)</label>
+            <input type="file" name="materialFile">
+            <div class="current-file">Current: <%= material.file_path %></div>
+        </div>
+
+        <button type="submit" class="btn-save">💾 Save Changes</button>
+        <a href="/portal" style="display:block; text-align:center; margin-top:15px; color:#666; text-decoration:none;">Cancel</a>
+    </form>
+</div>
+
+<script>
+    const cbcMapping = {
+        lower: ["English Activities", "Kiswahili Activities", "Mathematical Activities", "Environmental Activities", "Religious Education", "Creative Activities"],
+        upper: ["English", "Kiswahili", "Mathematics", "Science and Technology", "Agriculture and Nutrition", "Social Studies", "Religious Education", "Creative Arts"],
+        junior: ["English", "Kiswahili", "Mathematics", "Integrated Science", "Pre-Technical Studies", "Social Studies", "Agriculture and Nutrition", "Religious Education", "Creative Arts and Sports", "Computer Science", "Health Education"]
+    };
+
+    const gradeEl = document.getElementById('editGrade');
+    const subjectEl = document.getElementById('editSubject');
+    const currentSubject = "<%= material.subject_name %>";
+
+    function updateSubjects() {
+        const grade = parseInt(gradeEl.value);
+        let subjects = grade <= 3 ? cbcMapping.lower : (grade <= 6 ? cbcMapping.upper : cbcMapping.junior);
+
+        subjectEl.innerHTML = '';
+        subjects.forEach(sub => {
+            const opt = document.createElement('option');
+            opt.value = sub;
+            opt.textContent = sub;
+            if(sub === currentSubject) opt.selected = true;
+            subjectEl.appendChild(opt);
+        });
+    }
+
+    gradeEl.addEventListener('change', updateSubjects);
+    window.onload = updateSubjects; // Run on load to show current subject
+</script>
+
+</body>
+</html>
